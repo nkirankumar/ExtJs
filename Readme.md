@@ -427,27 +427,27 @@ Apart from the core packages, there are a number of utility classes in the Ext n
 classes.
 * Ext.Ajax
 	Used for sending Ajax requests.
-*Ext.Json
+* Ext.Json
 	Used for encoding and decoding JSON data.
-*Ext.XTemplate
+* Ext.XTemplate
 	Used for creating UI templates that can be applied on data.
-*Ext.Array
+* Ext.Array
 	Contains functions for working with arrays.
-*Ext.ComponentQuery
+* Ext.ComponentQuery
 	Provides functions to query the UI components.
-*Ext.Date
+* Ext.Date
 	Contains date related functions.
 The Ext namespace, which is nothing but a class, provides a number of commonly used functions. Listed below is
 a set of commonly used functions in Ext class.
-*onReady()
+* onReady()
 	Used to wire up a function that is called after the DOM tree is ready and dependent files are loaded.
-*application()
+* application()
 	Creates an instance of Ext.app.Application after the DOM is ready. You’ll use it when we discuss MVC architecture.
-*getCmp()
+* getCmp()
 	Most commonly used method to access the components based on their id.
-*query()
+* query()
 	Used to query the DOM tree based on selector expressions.
-*apply()
+* apply()
 	Used for copying the configuration data to an object
 The Ext class also provides properties like *is[BrowserType]* like *isIE6, isChrome, isGecko*, etc. for browser-related information.
 
