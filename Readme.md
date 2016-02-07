@@ -256,7 +256,7 @@ We can call the base class work function using
 	}
 	});
 The arguments passed to the Manager’s work function can be supplied to the Employee’s work function by using
-the arguments keyword in JavaScript as shown below.
+the *arguments* keyword in JavaScript as shown below.
 
 	this.callParent(arguments);
 You can extend a class and override the constructor as shown below. You can invoke the base class
@@ -326,4 +326,102 @@ You can use the alias property in the definition of the class as shown below.
 	Ext.create("Book");
 	
 There are certain conventions involved in creating these alias names. For example, alias names for custom
-components begin with the prefix widget, whereas alias names for custom proxy classes begin with proxy.
+components begin with the prefix **widget**, whereas alias names for custom proxy classes begin with **proxy**.
+
+Singleton:
+----------
+Ext JS 4 provides a way to create singleton classes. Singleton is a popular design pattern in OO languages where a class configured to be singleton has only one instance throughout the application.
+You can configure a class to be singleton by setting the property singleton to be true. When a class in Ext JS 4 is
+configured as singleton, an instance is automatically created. This kind of behavior, where an instance is automatically
+created for a singleton class, is not a standard practice in OO languages.
+
+	Ext.define("Company", {
+	singleton : true,
+	config: {
+	title: "Ace Inc.,",
+	},
+	getNumberOfEmployees: function () {
+	return 154;
+	}
+	});
+	console.log(Company.title);
+	console.log(Company.getNumberOfEmployees());
+In the code above, Company class is defined to be singleton, and an instance of the class is automatically created.
+However, you will access the members of the class using the class name as if they were static members.
+If you try to create an instance of the class
+ 
+	var c1 = Ext.create("Company");
+ then you’ll get a class instantiation error.
+
+**Note**
+In Ext JS 4 you actually define a singleton object and not a class. You don’t have to define a singleton class and create an instance later. You automatically get a singleton instance create when you write
+
+	Ext.define("classname",{singleton:true})
+Loading Dependencies:
+---------------------
+Ext JS 4 introduces the concept of dynamic loading of the dependent JavaScript files. You can specify the classes that
+your code is dependent on and the appropriate class files are loaded dynamically.
+The heart of this dynamic loading of dependent JavaScript files is the Ext.Loader class. This class is responsible
+for loading the dependent files either synchronously or asynchronously. You can specify the classes to be loaded
+explicity by using Ext.Loader.require method.
+Say your class uses the Ext.button.Button class, you can load the Button class explictly by using Ext.Loader.
+require or the shortcut Ext.require method.
+
+	Ext.Loader.require("Ext.button.Button");
+	(or)
+	Ext.require("Ext.button.Button");
+**Ext.require** loads the Button.js file and recursively the Button’s dependent files as well.
+There’s another way of specifying the loading information by using the requires property in a class, as shown
+below.
+
+	Ext.define("MyPanel",{
+	requires : ["Ext.button.Button"]
+	});
+In the above code the dependent files will be loaded before creating an instance of MyPanel class.
+Sometimes you may not mandatorily require the dependent files for creating an object of your class. You can use
+the uses property in this case, as shown below.
+
+	Ext.define("MyPanel",{
+	uses : ["Ext.button.Button"]
+	});
+Ext.Class:
+----------
+You’ve seen that Ext.define is used for defining a new class. Internally Ext.define calls **Ext.ClassManager.create** method. **Ext.ClassManager.create** creates an instance of **Ext.Class**. So when you define a new class using Ext.define,
+you’re actually creating an object of the class, Ext.Class.
+The following code where you create a Book class using Ext.Class is equivalent to whatever you’ve been learning
+using Ext.define method.
+
+	var Book = new Ext.Class({
+	config: {
+	title: "",
+	price: 5
+	},
+	constructor: function (cfg) {
+	this.initConfig(cfg);
+	},
+	read: function () {
+	console.log("Reading " + this.getTitle());
+	}
+	});
+	var ajax = Ext.create("Book", { title: "AJAX",price:12.00 });
+	ajax.read();
+We’ve created an instance of Ext.Class and assigned to a variable called Book, which is treated as the class name.
+You can create the instance of the Book class using the standard Ext.create method.
+Ext.Class is also responsible for running what is commonly referred as *'pre'* and *'post'* processors, such as config, extend, mixings, requires, etc., while creating a class.
+
+The Ext JS 4 API:
+=================
+Package | Description
+--------|------------
+Ext.form.field| Contains the classes that represent form elements like              textbox, checkbox, etc.
+Ext.data| Contains classes like Store, Model, or Proxy that deal with fetching and playing with data.
+Ext.layout.container| Deals with various layout components like Table, Accordion, Card, Border, etc.
+Ext.grid| Used for working with data grids
+Ext.tree| Used for displaying tree components
+Ext.chart| Provides classes to develop charts like Pie, Bar, Line, etc.
+Ext.menu| Contains classes used for creating menus
+Ext.toolbar| Provides classes for creating toolbars
+Ext.dd| Contains classes that implement drag and drop
+
+
+
