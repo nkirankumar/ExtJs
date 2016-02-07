@@ -451,5 +451,210 @@ a set of commonly used functions in Ext class.
 	Used for copying the configuration data to an object
 The Ext class also provides properties like *is[BrowserType]* like *isIE6, isChrome, isGecko*, etc. for browser-related information.
 
+Controls and Layout:
+====================
+Ext.Component:
+-------------
+The **Ext.Component** class serves as the base class for all the UI components in Ext JS 4. Ext.Component inherits the **Ext.AbstractComponent** class. It provides the common behavior and properties for all the UI components. The common functions include the basic creation, destruction, and rendering of the components. You can instantiate this class as
+shown below, though you’ll use it very rarely in the raw format.
 
+	Ext.create("Ext.Component", {
+	html: "Raw Component",
+	renderTo : Ext.getBody()
+	});
+The above code displays a text Raw Component in the page. It generates the following HTML snippet.
+
+	<div id="component-1099 class="x-component x-component-default">Raw Component</div>
+The Ext.Component generates a <div> tag with an automatically generated id and a default CSS class.
+All the components used in a page can be accessed through a singleton object **Ext.ComponentManager**. Ext.ComponentManager serves as a registry of all the components. You can access all the components by using the all
+property as **Ext.ComponentManager.all**.
+You can access the individual components based on their id by using the get method as **Ext.ComponentManager.get("id of the component")**.
+
+Configuration attributes of Ext.Component:
+-----------------------------------------
+**id**
+Every component has an automatically generated unique id assigned to it. You can use Ext.getCmp() method to access
+the component by specifying the id. You can assign your own id for the component as well.
+	
+	Ext.create("Ext.Component",{
+	id : "mycomp1"
+	});
+You can use Ext.getCmp as shown below
+
+	Ext.getCmp("mycomp1");
+It’s generally not recommended to define your own id, because as the application grows and you start adding components dynamically it may lead to duplication issues.
+**itemId**
+You can mark the component with an itemId instead of an id. The component that has itemId assigned to it can be accessed using that itemId through its parent component. Say, you have a Panel that has a component with an itemId.
+You can access the component using the itemId by invoking the method getComponent() on the Panel.
+
+	var panel1 = Ext.create("Ext.panel.Panel",{
+	// ...
+	items : [
+	Ext.create("Ext.Component",{
+	html : "Raw Component inside panel",
+	itemId : "rawcomp1"
+	})
+	]
+	// ...
+	});
+	panel1.getComponent("rawcomp1")
+The itemId property is preferred to the id as you don’t have to worry about the complications that arise due to duplicate id.
+
+**autoEl**
+The autoEl attribute is used to specify a custom HTML element that will encapsulate the the component. This attribute is usually used when we create custom components. Here’s a component that generates a hyperlink element using autoEl attribute.
+
+	Ext.create("Ext.Component", {
+	renderTo: Ext.getBody(),
+	autoEl: {
+	html: "Link",
+	href: "#",
+	tag: "a"
+	}
+	});
+The code snippet will generate the following HTML snippet.
+
+	<a class="x-component x-component-default" href="#" id="component-1009">Link</a>
+	
+**tpl, data**
+The components have a tpl property that’s used to configure the UI template for the Component. The data attribute supplies data to be applied to the template.
+
+Methods in Ext.Component:
+------------------------
+* destroy
+The destroy method destroys the component. It removes the reference to the element in the DOM tree.
+* on, un
+The listeners attribute is used to statically register the events and handler functions. The on method is used to dynamically do that. The on method accepts the name of the event, the event handler function and the scope or
+context of the executing handler function as arguments.
+
+	comp1.on("eventName",function(){...},scope)
+	mycombobox1.on("change",function(){...},this)
+In the code snippet above, you’ve registered the change event on the combobox object. The scope ‘this’ refers to the context object where the handler function gets executed. The scope is an optional parameter.
+The un method is used to remove the event handler for the specified event.
+
+	comp1.un("eventName",function(){...},scope)
+You have to specify the same event handler function and scope used in the on method.
+* addEvents, fireEvent
+The Component class provides methods addEvents and fireEvent for adding events and firing the event respectively.
+These two methods are mainly used when you create custom components with custom events. You can call addEvents on a component comp by writing 	
+
+	comp.addEvents(‘eventname1’,’eventname2’ ...). 
+You can invoke the fireEvent like 
+	
+	comp.fireEvent(‘eventname’).
+	
+Events in Ext.Component:
+------------------------
+The Component class provides a number of lifecycle events. These are raised when the component is created,activated, rendered, destroyed, and so on. All these events can be handled by registering them using the listeners
+attribute or using the on method.
+
+Event| Description
+-----|------------
+Added| Raised when the component is added to the container
+Removed| Raised when the component is removed from the container
+beforerender| Raised before rendering the component on to the HTML element
+render| Raised after the component is rendered to the HTML element
+afterrender| Raised after completion of the component rendering
+beforedestroy| Raised before calling destroying the component or before calling destroy method
+destroy| Raised after destroy or after calling the destroy method
+beforeactivate| Raised before a component is activated. This is mainly used in accordions and tab panels.
+activate| Raised after a component is activated
+beforedeactivate| Raised before a component is deactivated
+deactivate| Raised after a component is deactivated
+beforeshow| Raised before calling the show method on the component
+show| Raised after calling the show method on the component
+beforehide| Raised before calling the hide method on the component
+hide| Raised after calling the hide method on the component
+
+Subclasses of Ext.Component:
+----------------------------
+Class| Description
+-----|------------
+Ext.container|AbstractContainer Base class for the container controls
+Ext.button|Button The button control
+Ext.form.Label| The standard label element
+Ext.form.field.Base| Base class for all the field components like textfield
+Ext.draw.Component| Represents the surface on which you can draw shapes
+
+Ext.container.Container:
+=======================
+Ext.container.Container class is the base class for all the container-based components in Ext JS 4. It provides the common behavior and properties for all the UI containers. The common functions include the addition, udpation, and removalof the components. You can instantiate this class as shown below, though you’ll use it very rarely in the raw format.
+
+	Ext.create("Ext.container.Container", {
+	html : "Raw Container",
+	renderTo: Ext.getBody()
+	});
+In the code snippet above, we’ve created an instance of Container class. This instance is empty as we’ve not added any components to it. The code displays a text Raw Container in the page. It generates the following HTML snippet.
+
+	<div id="container-1009" class="x-container x-container-default">Raw Container
+	<div id="container-1009-clearEl" class="x-clear" role="presentation"></div>
+	</div>
+	
+Configuration Attributes of Ext.container.Container
+----------------------------------------------------
+Let’s discuss some of the configuration attributes of the Container class.
+* items 
+The items attribute refers to the collection of components that you’ll add to the container. A Container class with a textbox and button component added to it using items is shown below.
+
+	Ext.create("Ext.container.Container",{
+	items : [
+	Ext.create("Ext.form.field.Text",{...}),
+	Ext.create("Ext.button.Button",{...})
+	]
+	});
+* layout
+This attribute is used to configure the layout for the container, so that the components may be arranged in a particular fashion. You’ll learn more about the layout later in this chapter.
+* defaults
+The defaults attribute is used to specify a set of default properties for all the items in the container. It helps you avoid duplication of code. If you want all the items in the container to have a specific width and height, then you can configure that using defaults as shown below.
+
+	Ext.create("Ext.container.Container",{
+	defaults : {
+	width:100,height:150
+	},
+	items : [
+	...
+	]
+	});
+
+Some Methods in Container class.Methods of Ext.container.Container:
+------------------------------------------------------------------
+* add
+The add method is used to dynamically add components into the container. When the components are added dynamically using the add method the container rearranges itself automatically. You can pass component or an array
+of components as argument to the add method.
+
+	var container1 = Ext.create("Ext.container.Container",{
+	...
+	});
+	var item1 = Ext.create("Ext.Component",{...});
+	container1.add(item1);
+* doLayout
+doLayout method triggers the container to recalculate the layout and refresh itself.
+* down
+This method, similar to the up method in Component class, is used to navigate to the descendants of the container that matches the expression passed as an argument. For example if you have a container, say container1, that has a
+button calling container1.down("button") walks down the container and returns the button component that’s a child or grandchild or any descendant.
+* remove
+The remove method is used to remove the components from the container. You can invoke remove method by passing the component or id of the component to be removed as argument.
+
+	var container1 = Ext.create("Ext.container.Container",{
+	...
+	});
+	var item1 = Ext.create("Ext.Component",{...});
+	container1.add(item1);
+	container1.remove(item1);
+	
+Events in Container class:
+--------------------------
+Event| Description
+-----|------------
+beforeadd| Fired before adding an item to the container
+Add| Fired after an item is added
+beforeremove| Fired before removing an item from the container
+remove| Fired after removing an item from the container
+
+Subclass of Ext.container.Container:
+------------------------------------
+Class| Description
+-----|------------
+Ext.container|Viewport Represents the viewable area
+Ext.panel|AbstractPanel Base class for all the panel based containers
+Ext.toolbar|Toolbar Represents a toolbar
 
