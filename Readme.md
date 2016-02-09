@@ -658,3 +658,28 @@ Ext.container|Viewport Represents the viewable area
 Ext.panel|AbstractPanel Base class for all the panel based containers
 Ext.toolbar|Toolbar Represents a toolbar
 
+Container Controls:
+------------------
+**Ext.panel.Panel**
+Ext.panel.Panel with the xtype ‘panel' is the root container class for several container classes. It’s probably the most commonly used container class. You can create a Panel as shown below.
+
+	Ext.create("Ext.panel.Panel",{
+	title : "Sample Panel",
+	items : [
+	...
+	]
+	});
+**Panel Controls**:
+
+Class| Description
+-----|-------------
+Ext.form.Panel| Represents a form
+Ext.menu.Menu| Represents a menu
+Ext.window.Window| Represents a floatable, draggable window component
+Ext.tab.Panel| Represents a tabbed container
+
+![GitHub Logo](/images/window.PNG)
+Format: ![Alt Text](url)
+
+
+
