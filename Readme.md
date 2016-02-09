@@ -678,8 +678,183 @@ Ext.menu.Menu| Represents a menu
 Ext.window.Window| Represents a floatable, draggable window component
 Ext.tab.Panel| Represents a tabbed container
 
+Ext.window.Window:
+------------------
+Window represents a floatable, draggable, resizable panel. Windows can be configured to be modal.
+
+	var win = Ext.create("Ext.window.Window", {
+	title: "Find and Replace",
+	modal: true,
+	items: [
+	{
+	xtype: "textfield",
+	fieldLabel: "Find what"
+	}
+	],
+	buttons: [
+	{
+	text: "Find next"
+	},
+	{
+	text: "Cancel"
+	}
+	]
+	});
+	win.show();
 ![GitHub Logo](/images/window.PNG)
 Format: ![Alt Text](url)
 
+The window will be a modal one masking the background completely as you’ve configured the modal property to be true.
 
+Ext.menu.Menu:
+-----------------
+Ext.menu.Menu is the container that’s used to display menus. Menu is made up of Ext.menu.Item controls. A menu can be shown as a standalone control or can be added as a child. A standalone menu can be created as shown
 
+	var editMenu = Ext.create('Ext.menu.Menu', {
+	items: [
+	{
+	text: 'Undo'
+	},
+	{
+	text: 'Cut'
+	},
+	{
+	text: 'Copy'
+	},
+	{
+	text: "Paste"
+	}
+	]
+	});
+	editMenu.show();
+The menu is made of menu items. The default xtype of each menu item is a panel, and it has a text property that can be used to configure the text.
+
+You can add the menu as a child item as well. Let’s add the menu to a Button using its menu attribute as shown below.
+
+	Ext.create("Ext.button.Button",{
+	text : "Edit",
+	menu : editMenu
+	});
+Ext.tab.Panel:
+--------------
+This class is used to create tabbed containers. It can be intepreted as a panel with the child items following a card layout. A tab panel has a tab bar represented by the Ex.tab.Bar class that can be positioned at the top, bottom, left, or right. Each tab in the panel is an object of the Ext.tab.Tab class.
+
+	Ext.create('Ext.tab.Panel', {
+	renderTo: Ext.getBody(),
+	title: "Documentation",
+	plain: false,
+	height : 200,
+	tabPosition: "bottom",
+	items: [
+	{
+	title: 'Home',
+	html : "Welcome to Ext JS 4"
+	},
+	{
+	title: 'API',
+	html : "API docs"
+	},
+	{
+	title: 'Guides',
+	html : "Standard guides"
+	}
+	]
+	});
+The tab panel has three tabs. The tab panel is configured to be plain, with no background for the tab bar.
+
+Ext.form.Panel:
+--------------
+Form panel class serves as the container for forms. You can add the controls in Ext.form.field package to the form panel class. The form panel provides support for processing form, validation, and so forth.Ext.form and Ext.form.field are the packages that supply us the form controls. The list of commonly used UI controls along with their xtype is shown
+
+Class| xtype
+-----|------
+Ext.form.field.Text| textfield
+Ext.form.field.TextArea| textarea
+Ext.form.field.Checkbox| checkbox
+Ext.form.field.ComboBox| combobox
+Ext.form.field.Radio| radio
+Ext.form.field.Date| datefield
+Ext.form.field.Number| numberfield
+Ext.form.Label| label
+Ext.form.RadioGroup| radiogroup
+Ext.form.CheckboxGroup| checkboxgroup
+Ext.form.FieldSet| fieldset
+
+The controls form has a radio group, date field, number field, text area, and a button.
+The form controls can be wired up with basic validation rules. For instance, the common validation properties of the text based controls are allowBlank, maxLength, minLength, and so on. In the form we created, we can apply the validation rules as shown below.
+
+	{
+	xtype : "textfield",
+	fieldLabel : "Name",
+	allowBlank : false,
+	maxLength : 50,
+	msgTarget : "side"
+	},
+	{
+	xtype : "datefield",
+	fieldLabel : "Date of birth",
+	msgTarget : "side"
+	}
+The name textfield has validation rules used. The msgTarget displays the error message by the side of the textfield when the validation fails. The default value is qtip where the error message is displayed as a quick tip
+
+Another useful property called vtype can be used for using built-in validation rules like e-mail, URL, and so forth.
+The blog text field we have used in our example can be configured to have a validation type as shown here.
+
+	{
+	xtype : "textfield",
+	fieldLabel : "Blog",
+	vtype : "url"
+	}
+We can also register our own validation functions using validator property. The validator function is passed in the value of the field. It returns the error message or true based on the outcome of validation. The address field with a custom validator is shown below.
+
+	{
+	xtype : "textarea",
+	fieldLabel : "Address",
+	validator : function(val){
+	if(val.indexOf("#") != -1 || val.indexOf(".") != -1)
+	return "Invalid characters like # or . in address";
+	return true;
+	}
+	}
+The FormPanel has a submit() method that can be used to submit the form to the server. The form values are submitted to the server using AJAX by default. The server URL can be specified using the url property. The submit button’s click event can be handled to submit the form. The form will be submitted only when there are no validation errors. The FormPanel’s submit method can be invoked as shown
+
+	Ext.create("Ext.form.Panel",
+	{
+	title : "Controls",
+	url : "someUrl",
+	items : [
+	{
+	xtype : "datefield",
+	fieldLabel : "Date of Birth",
+	name : "dob"
+	},
+	{
+	xtype : "textfield",
+	fieldLabel : "Blog",
+	name : "blog"
+	}
+	{
+	xtype : "button",
+	text : "Submit",
+	listeners : {
+	"click" : function(src){
+	src.up("form").submit();
+	}
+	}
+	}
+	]
+	});
+
+The click listener for the button navigates to the form using the up() method. The form is automatically submitted to the configured url attribute. The form data is passed to the server using the name property of the elements. The server resource can access the form elements using their respective names.The submit method can optionally accept an Ext.form.action.Action object as parameter with AJAX callback functions.
+
+	src.up("form").submit({
+	success : function(form,action){
+	alert("Successfully submitted");
+	},
+	failure : function(form,action){
+	console.log(action.failureType);
+	console.log(action.result);
+	alert(action.response.status + ", " + action.response.statusText);
+	}
+	});
+The success and failure callback functions are invoked after the form submission. We can disable AJAX and opt for a normal form submission instead using the standardSubmit property. Inside the FormPanel we can set standardSubmit property to be true.
