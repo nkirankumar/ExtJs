@@ -858,3 +858,403 @@ The click listener for the button navigates to the form using the up() method. T
 	}
 	});
 The success and failure callback functions are invoked after the form submission. We can disable AJAX and opt for a normal form submission instead using the standardSubmit property. Inside the FormPanel we can set standardSubmit property to be true.
+
+see the *formPanelApp.js*
+
+Ext.toolbar.Toolbar:
+--------------------
+This container class is used to create toolbars. The toolbar is composed of various child controls. The default component that is added to a toolbar is a button. You can add items declaratively to a toolbar and also dynamically
+using the *add()* method present in the Toolbar class. You can also add the following toolbar-related items to a toolbar apart from the regular collection of controls like textfield, label, and so on.
+
+**Ext.toolbar.TextItem (tbtext)**
+This class is used to render a simple text in a toolbar. You can use it as shown below.
+
+	{xtype:"tbtext", text:"Sample text"}
+
+**Ext.toolbar.Separator (tbseparator)**
+This class adds a vertical separator bar in the toolbar. You can use it as shown below.
+
+	{xtype:"tbseparator"}
+You can use a Separator with a "-" hyphen symbol instead of configuring it using xtype.
+
+**Ext.toolbar.Spacer (tbspacer)**
+This class adds a default 2px space in the toolbar. You can use it as shown below.
+
+	{xtype:"tbspacer"}
+You can use a Spacer with a " " blank space instead of configuring it using xtype.
+
+**Ext.toolbar.Fill (tbfill)**
+This class right justifies the items to be added after adding this item. You can use it as shown below.
+
+	{xtype:"tbfill"}
+You can use a Fill with a "->" right arrow instead of configuring it using xtype.
+
+**Ext.toolbar.Paging (pagingtoolbar)**
+This class is used to display a paging bar when you use data components like grid panel.
+
+The toolbar is docked to the bottom of the toolbar. The toolbar has the spacer, separator, and tbfill items added using the shortcut notations. The combobox is intentionally empty.
+
+see the *toolBarApp.js*
+
+Ext.container.Viewport:
+-----------------------
+All the containers that we have discussed lack the capability to resize themselves when the browser window is resized.
+You’ve a specialized container for this purpose called Viewport. ViewPort is present in Ext.Container package and it represents the viewable browser area. Items added to the Viewport automatically get resized when the browser window is resized. Viewport is usually created as the root container of an application. Viewport is a container defined with an Auto layout by default, and it can be changed according to our requirement. We can create a Viewport with border layout as shown below.
+
+	Ext.create("Ext.container.Viewport",{
+	layout : "border",
+	items : [
+	..
+	]
+	});
+Ext JS4 provides a number of layout controls that can be used to design our applications.
+
+Layout Controls:
+---------------
+All the container classes arrange their items in a specific fashion based on the layout you provide. A container with a table layout arranges the items in a tabular format, the one with a vbox layout arranges the components vertically.*Ext.layout.Layout* is the base class for all the layout classes. Layout class is inherited by the *Ext.layout.container*.
+Container that serves as the base class for all layout controls.
+The *Ext.layout.container* package provides the different layout controls that are used to arrange our components.
+
+**Layout controls**
+
+Class| xtype| Description
+-----|------|------------
+Absolute| absolute| Used to arrange the components by specifying the x- and y-coordinates.
+Accordion| accordion| Denotes the accordion style
+Anchor| anchor| Arrange the components relative to their container’s position.
+Border| border| Split the entire page into different regions. It’s usually used to design an entire page in the application.
+Card| card| The container’s items are treated as a pack of cards and only one of them is shown at any point of time.
+Form| form| The components are rendered one after the other as a typical form.
+Table| table| Arrange the components in a tabular fashion.
+HBox| hbox| Arrange the components horizontally.
+VBox| vbox| Arrange the components vertically.
+Fit| fit| The components of the container with fit layout is arranged to fit the entire area of the container.
+
+	Ext.create("container",{
+	layout : {
+	type : "xtype of any layout control",
+	//propertiesOfTheLayoutControl
+	}
+	});
+If you don’t have any additional properties of the layout to be configured, the layout configuration is
+
+	Ext.create("container",{
+	layout : "xtype of any layout control"
+	});
+**various layout components:**
+
+Auto Layout:
+------------
+The default layout for the containers in Ext JS4 is Auto layout. This layout manager automatically renders the components in a container.
+
+Fit Layout:
+----------
+The fit layout arranges the contents of the container to occupy the space completely. It fits the items to the container’s size. Fit layout is usually used on containers that have a single item. Fit layout is the base class for the Card layout
+
+	Ext.create("Ext.panel.Panel",{
+	layout : "fit",
+	height:200,width:200,
+	title : "Fit layout panel",
+	items : [
+	{
+	xtype : "textfield",
+	fieldLabel : "Email"
+	}
+	]
+	});
+The panel has a textfield that will be fit into the container to occupy the complete space
+
+Anchor Layout:
+--------------
+The anchor layout manager arranges the items of a container relative to the size of the container. Whenever the container is resized, the anchor layout manager rearranges the items relative to the new size of the container. You can configure an anchor property to the child items. You can configure the width and height values in percentage and the offset values in the anchor property as shown below.
+
+	anchor : "width% height%"
+	(or)
+	anchor : "offsetWidth offsetHeight"
+You can also mix these two options by specifying an offset value and a percentage. Here’s a simple panel that has a text field and a button and configured with an anchor layout. The items are configured with anchor
+attributes. Whenever you click the button, the width and height of the panel are increased by 5px. Here’s the code for that.
+
+	var pnl = Ext.create('Ext.panel.Panel', {
+	layout: "anchor",
+	height: 200, width: 200,
+	title: "Anchor layout panel",
+	items: [
+	{
+	xtype: "textfield",
+	fieldLabel: "Name",
+	anchor : "90% 15%"
+	},
+	{
+	xtype: "button",
+	text: "Resize",
+	anchor : "-80 -145",
+	listeners: {
+	click: function () {
+	pnl.setWidth(pnl.getWidth() + 5);
+	pnl.setHeight(pnl.getHeight() + 5);
+	}
+	}
+	}
+	],
+	renderTo: Ext.getBody()
+	});
+By clicking on the resize button continuously, you’ll find out that the size of the textfield and button increase proportionately.
+
+Box Layout:
+-----------
+*Ext.layout.container.Box* serves as the base class for VBox and HBox layouts. VBox and HBox stand for vertical box and horizontal box, respectively.
+The *pack* and *align* properties of the VBox layout are used for positioning the buttons inside the container.
+
+	Ext.create("Ext.panel.Panel", {
+	height: 200, width: 200,
+	title : "VBox panel",
+	layout : {
+	type : "vbox",
+	pack : "center",
+	align : "center"
+	},
+	defaults : {xtype : "button",margin:"10"},
+	items : [
+	{text : "A"},
+	{text : "B"},
+	{text : "C"},
+	],
+	renderTo : Ext.getBody()
+	});
+Accordion Layout:
+-----------------
+Accordion layout is an extension of VBox layout. It arranges a set of panels vertically with collapse and expandable features.
+
+	Ext.create("Ext.panel.Panel", {
+	height: 300, width: 300,
+	title: "Accordion layout ",
+	layout: {
+	type : "accordion",
+	multi : true
+	},
+	items: [
+	{
+	title: "Inbox",
+	html : "Inbox contents"
+	},
+	{
+	title: "Outbox",
+	html: "Outbox contents"
+	},
+	{title: "Sent Items",
+	html: "Sent Items"
+	}
+	],
+	renderTo: Ext.getBody()
+	});
+The accordion layout is configured with a multi attribute which enables viewing multiple panels
+
+Table Layout:
+-------------
+Table layout is used to render a HTML table element. It has all the properties of a table, the most commonly used being the *columns* attribute.
+
+	Ext.create("Ext.panel.Panel", {
+	height: 200, width: 200,
+	title: "Table layout ",
+	layout: {
+	type: "table",
+	columns: 2
+	},
+	defaults: {
+	xtype: "button",
+	margin: "10"
+	},
+	items: [
+	{
+	text: "A"
+	},
+	{
+	text: "B"
+	},
+	{
+	text: "C"
+	},
+	{
+	text: "D"
+	},
+	{
+	text: "E"
+	},
+	{
+	text: "F"
+	}
+	],
+	renderTo: Ext.getBody()
+	});
+
+Column Layout:
+--------------
+Column layout arranges the container in separate columns starting from left to right. Each item in the container that uses column layout is configured with a columnWidth attribute. The sum of the values of columnWidth attributes of all the items need to be equal to the total width of the container. You can provide the values of columnWidth in percentage or a
+concrete value. The percentage value is provided as a decimal number where the total columnWidth equals 1.
+
+	Ext.create('Ext.panel.Panel', {
+	title: 'Column',
+	width: 600, height: 200,
+	layout: 'column',
+	defaults : {margin : "10"},
+	items: [
+	{
+	title : "Folder List",
+	html : "Folder List contents",
+	columnWidth : 0.20
+	},
+	{
+	title: "Inbox",
+	html: "Inbox contents",
+	columnWidth : 0.30
+	},
+	{
+	html: "Mail contents",
+	columnWidth: 0.50
+	}
+	],
+	renderTo: Ext.getBody()
+	});
+	
+Border Layout:
+--------------
+Border layout is usually the master layout in an Ext JS 4 application. You can design a master layout with regions like header, footer, and menus. In Ext JS 4, which is predominantly used for building single-page applications, border layout is used to design the entire layout of the page
+
+The border layout splits the page into different regions like north, south, east, west, and center. The center regionhas to be mandatorily configured while the other regions are optional. For example, in the figure above, you can say that the page has three regions, a header with a menu bar in the north, the list of classes in a tree format in the east,and the main content in the center.
+
+	Ext.create("Ext.panel.Panel",{
+	layout : "border",padding:30,id:"main",height:500,width:400,
+	items : [
+	{
+	xtype : "panel",
+	html : "Top ",
+	region : "north"
+	},
+	{
+	xtype : "panel",
+	html : "Main contents",
+	region : "center"
+	},
+	{
+	xtype : "panel",
+	html : "Side bar",
+	collapsible : false,
+	split : true,
+	region : "west"
+	}
+	],
+	renderTo : Ext.getBody()
+	});
+The Panel is split into north, west, and center regions. In this example each region has a panel configured in it.
+The west region has optional properties like collapsible, split, and so forth, configured to be able to hide and resize the
+region dynamically.
+
+Card Layout:
+------------
+You have a Panel with a number of child components and only one child control needs to be shown at a time. The Panel can use a card layout for this purpose. Card layout, when used on a container, treats its items as a collection of cards and shows only one item at any point of time.
+Card layout has an important property called *activeItem* that holds the information about the item that has to be displayed. This property has to be manipulated to change the item to be shown.
+
+	Ext.create("Ext.panel.Panel",{
+	layout : "card",padding:30,id:"main",
+	items : [
+	{
+	xtype : "panel",
+	title : "Screen 1",
+	items : [
+	{
+	xtype : "button",
+	text : "go to screen 2",
+	handler : function(){
+	Ext.getCmp("main").getLayout().setActiveItem(1);
+	}
+	}
+	]
+	},
+	{
+	xtype : "panel",
+	title : "Screen 2",
+	items : [
+	{
+	xtype : "button",
+	text : "go to screen 3",
+	handler : function(){
+	Ext.getCmp("main").getLayout().setActiveItem(2);
+	}
+	}
+	]
+	},
+	{
+	xtype : "panel",
+	title : "Screen 3"
+	}
+	],
+	renderTo : Ext.getBody()
+	});
+
+The main Panel uses the card layout. It has three panel children. The Screen1 and Screen2 panels have a button when clicked change the active item of the card layout. The setActiveItem method on the Card Layout class accepts a number that represents the index of the controls as the parameter. The setActiveItem can accept the id of the control as a parameter as well. If Screen 2 panel’s id is “screen2”, we can the change the active item by
+
+	Ext.getCmp("mainpanel").getLayout().setActiveItem("screen2")
+We can also pass the component as the parameter like this:
+
+	Ext.getCmp(“mainpanel”).getLayout().setActiveItem(Ext.create(“Ext.Button”,{…})). 
+
+This can be used if you create a new object and set it as an active item, instead of creating it beforehand and not showing it.
+
+You’ll get Screen 1 panel, and when you click the “Got to Screen 2” button, you’ll get Screen2. Clicking on “Go to Screen 3” button will give you the Screen 3. Please note that only one screen is showed at any point of time in card layout
+
+One of the advantages of using Ext JS 4 as we discussed earlier is the support for writing modularized code. In the card layout code snippet shows you can bring in some modularity by organizing the items of the main
+panel into individual classes. Following snippet shows a modularized version of using card layout.
+
+	Ext.define("Screen1",{
+	extend : "Ext.panel.Panel",
+	xtype : "screen1",
+	title : "Screen 1",
+	items : [
+	{
+	xtype : "button",
+	text : "Go to Screen 2",
+	handler : function(){
+	Ext.getCmp("viewport").getLayout().setActiveItem(1);
+	}
+	}
+	]
+	});
+	Ext.define("Screen2",{
+	extend : "Ext.panel.Panel",
+	xtype : "screen2",
+	title : "Screen 2",
+	items : [
+	{
+	xtype : "button",
+	text : "Go to Screen 3",
+	handler : function(){
+	Ext.getCmp("viewport").getLayout().setActiveItem(2);
+	}
+	}
+	]
+	});
+	Ext.define("Screen3",{
+	extend : "Ext.panel.Panel",
+	xtype : "screen3",
+	title : "Screen 3"
+	});
+	Ext.onReady(function(){
+	Ext.create("Ext.container.Viewport",{
+	layout : "card",padding:30,id:"viewport",
+	items : [
+	{
+	xtype : "screen1",
+	id : "screen1"
+	},{
+	xtype : "screen2",
+	id : "screen2"
+	},
+	{
+	xtype : "screen3",
+	id : "screen3"
+	}
+	],
+	renderTo : Ext.getBody()
+	});
+	}
+	);
