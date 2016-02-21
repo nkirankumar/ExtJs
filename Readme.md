@@ -1265,4 +1265,51 @@ Ext.data package:
 The *Ext.data* package provides all the classes that are responsible for loading, parsing and saving the data. The classes take care of fetching the data from the data source, parsing the data to the required format, writing the data back to the source, saving the data in the client, sorting, filtering, and querying the data.
 The basic set of classes that you will use in Ext.data package and its sub packages.
 
-<span style="color:red">red</span>
+Class| Description
+-----|------------
+Ext.data.Connection| Establishes the connection to the server, sends the requests, and gives youthe response
+Ext.data.Request| Encapsulates the request data sent to the server
+Ext.data.Model| Represents the object or a record or a row.
+Ext.data.Field| Represents the fields or columns in a row
+Ext.data.validations| Provides a set of validation functions
+Ext.data.association.Association| Represents the association relationships between Model classes
+Ext.data.Store| Represents the data store that contains a collection of records or Model objects
+Ext.data.proxy.Proxy| The class that is used to fetch data from a data source
+Ext.data.reader.Reader| The class that’s used to read the data and convert it to a Model format
+Ext.data.writer.Writer| Write data back to the data source.
+
+The three most widely used classes in Ext.data packages are the **Model**, **Store**, and **Proxy** classes
+
+Ext.data.Connection, Ext.data.Request:
+======================================
+This class encapsulates the request sending mechanisms to the server. You can create an instance of this class and call its request function. The request function takes in an instance of Ext.data.Request as an argument. Let’s say you’ve a books.txt file with the following data.
+
+	Ext.create("Ext.data.Connection").request(
+	Ext.create("Ext.data.Request",{
+	url: "books.txt",
+	success: function (xhr) {
+	console.log(xhr.responseText);
+	},
+	failure : function(xhr){
+	console.log("Error: " + xhr.statusText);
+	}
+	}
+	));
+	
+You can create an instance of Connection class and call its request method by passing a Request object to it.The Request object is supplied with the url attribute and callback functions success and failure. The success or failure functions will be called asynchronously by passing the XmlHttpRequest instance, depending on the response.
+There’s a much easier way of sending Ajax requests by using the **Ext.Ajax** class. Ext.Ajax class itself is a singleton instance of **Ext.Connection**. You can rewrite the above code using Ext.Ajax as shown
+
+	Ext.Ajax.request(
+	{
+	url: "books.txt",
+	success: function (xhr) {
+	console.log(xhr.responseText);
+	},
+	failure : function(xhr){
+	console.log("Error: " + xhr.statusText);
+	}
+	}
+	);
+	
+Since Ext.Ajax is an instance of Connection class, you can call the request method directly by passing the configuration object.The Connection and Request classes are used indirectly by the proxy classes.
+In a typical scenario, a Store class uses a Proxy to fetch data from the source. The reader parses the data and converts it to the format defined by a Model. The Store contains a collection of Model objects. The store uses a Writer to write the changes in the data, back to the source.
