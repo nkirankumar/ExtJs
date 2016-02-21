@@ -1258,3 +1258,11 @@ panel into individual classes. Following snippet shows a modularized version of 
 	});
 	}
 	);
+see the *layOutApp.js*
+
+Ext.data package:
+=================
+The *Ext.data* package provides all the classes that are responsible for loading, parsing and saving the data. The classes take care of fetching the data from the data source, parsing the data to the required format, writing the data back to the source, saving the data in the client, sorting, filtering, and querying the data.
+The basic set of classes that you will use in Ext.data package and its sub packages.
+
+<span style="color:red">red</span>
