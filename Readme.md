@@ -1313,3 +1313,287 @@ There’s a much easier way of sending Ajax requests by using the **Ext.Ajax** cla
 	
 Since Ext.Ajax is an instance of Connection class, you can call the request method directly by passing the configuration object.The Connection and Request classes are used indirectly by the proxy classes.
 In a typical scenario, a Store class uses a Proxy to fetch data from the source. The reader parses the data and converts it to the format defined by a Model. The Store contains a collection of Model objects. The store uses a Writer to write the changes in the data, back to the source.
+
+Ext.data.Model:
+==============
+A Model class represents data models. It is used to define the format of data under consideration. It’s similar to a record or row in a table. You can define a Model by giving it a name and listing the fields that the Model is composed of.
+Let’s define a Model class called Country with fields like name, capital, and population members as shown below.
+	
+	Ext.define("Country", {
+	extend: "Ext.data.Model",
+	fields : ["name","capital","population"]
+	});
+We’ve defined a class “Country” that inherits Ext.data.Model. It has the fields attribute to list the fields of the class. A Model instance can be created using the standard Ext.create method.
+The Country class can be instantiated like this.
+
+	Ext.create("Country", {name: "France", capital: "Paris", population: 65436552});
+You can access the values of the Country object using the get() and set() methods defined the Model class.
+The code below shows the usage of get() and set() methods.
+
+	var fr = Ext.create("Country", { name: "France", population: 65436552});
+	console.log(fr.get("name"));
+	fr.set("capital", "Paris");
+Every Model class is internally defined with a field called “id” that serves as a primary key. The getId() method in the Model class can be used to access the id value. In the code above the id value is not initialized for the Model instance. Let’s create a Country object initializing its id value as shown below.
+
+	var fr = Ext.create("Country", { id: "101", name: "France", capital: "Paris", population: 3248768787 });
+	console.log(fr.getId()); //Prints 101
+If you want to configure any other field to serve as an id, idProperty can be used. Let’s define the Country Model where you configure the idProperty to be name as shown below.
+
+	Ext.define("Country", {
+	extend: "Ext.data.Model",
+	fields : ["name","capital","population"],
+	idProperty : "name"
+	});
+	var fr = Ext.create("Country", { name: "France", capital: "Paris", population: 65436552 });
+	console.log(fr.getId()); //Prints France
+Invoking getId() will now output the name of the country as it’s been configured as the idProperty. The purpose of having an id in a Model class is to pave way for performing operations like load, search, and so on. You can invoke these operations only when you have the Model configured with a Proxy. Let’s take up a simple example of using a Model with a Proxy, 
+In this example we’ll define the Model Country, wired up with a Proxy. The Proxy that we’ll use is an
+in-memory Proxy, The in-memory proxy supplies the data for the Country in JSON format as shown in 
+
+	Ext.define("Country", {
+	extend: "Ext.data.Model",
+	fields: ["name", "capital", "population"],
+	idProperty: "name",
+	proxy: {
+	type: "memory",
+	data: {
+	country: {
+	name: "France",
+	capital: "Paris",
+	population: 65436552
+	}
+	},
+	reader: {
+	type : "json",
+	root : "country"
+	}
+	}
+	});
+we’ve specified the data for the Model in JSON format. We’ve wired up a reader that parses the
+JSON formatted data.
+You can load the Country object by using the id property, as shown below.
+
+	Country.load("France", {
+	success: function (record) {
+	console.log(record.get("capital")); //Prints Paris
+	console.log(record.get("population")); //Prints 65436552
+
+The load method accepts the id, which is the name of the country in our case, and a callback function as parameters. We’ve used a success callback function in this example. The load method invokes the proxy that fetches the contents corresponding to the id and hands over a Model object to the success callback.
+
+Ext.data.Field:
+===============
+The fields of the model are instantiated to Ext.data.Field objects. In our Country class shown in , the Country model will have three instances of Field class. The Field class has few useful properties to specify the data types, set default values, extract values from the data and assign it and so on. The Country class definition with the use of these additional field properties is shown below.
+
+	Ext.define("Country", {
+	extend: "Ext.data.Model",
+	fields: [
+	{name: "name", type: "string"},
+	"capital",
+	{name: "population", type: "number", mapping: "country_population"},
+	{name: "continent", type: "string",defaultValue:"Europe"},
+	]
+	});
+		}
+		});
+Ext.data.validations:
+=====================
+Model class provides a facility to configure the validation rules. **Ext.data.validations** class is used to configure the different validation rules. There are different validators like length, presence, exclusion, inclusion, format,and email. These validators are actually simple methods of Ext.data.validations class. Let’s define a Model with few validation rules for the fields as shown in
+ 
+	Ext.define("Book", {
+	extend: "Ext.data.Model",
+	fields: ["title", "author", "ISBN", "price"],
+	validations: [
+	{ type: "presence", field: "title" },
+	{ type: "length", field: "author", max: 20, min: 3 },
+	{ type: "format", field: "ISBN",
+	matcher: /ISBN(?:-13)?:?\x20*(?=.{17}$)97(?:8|9)([ -])\d{1,5}\1\d{1,7}\1\d{1,6}\1\d$/ },
+	{type:"inclusion",field:"price",list:["$20","$25","$30","$35"]}
+	]
+	});
+The Book model is configured with the validations attribute. The title, author and price fields are configured with presence, length and inclusion validation types. The ISBN property is configured with a regular expression.
+Let’s create an instance of Book class and validate it by calling the validate() method.
+
+	var b1 = Ext.create("Book", { title: "Practical XYZ", ISBN: "ISBN: 978-3-5028-4391-71",price:"$45" });
+	var errors = b1.validate();
+Calling the validate() method runs the validation rules on the fields and returns back an instance of
+**Ext.data.Errors** class. You can loop through the errors collection and display the error messages as shown below.The code prints the field name and the error message corresponding to the field, in the console.
+
+	errors.each(function (item) {
+	console.log(item.field + " " +item.message);
+	});
+The output is:
+author is the wrong length
+ISBN is the wrong format
+price is not included in the list of acceptable values
+
+If you need more control of the validation, you can always override the validate method in your Model class and construct an **Ext.data.Errors** object with custom error messages.
+You can create custom validation rules by extending the **Ext.data.validations** singleton object. Say you want to create a validation rule called priceRange and check if the price value is between the permissible range like this.
+
+	{type:"priceRange" max:50,min:5,message:"must be between 5 and 50"}
+Here’s how you define a priceRange validator.
+
+	Ext.data.validations.priceRange = function (config, value) {
+	var max = config.max;
+	var min = config.min;
+	return value < max && value > min;
+	};
+All you need to do is attach a custom function in Ext.data.validations. This function accepts the configuration object and the value that is assigned to the field. You can access the max and min values from the configuration object, compare it with the value and return a Boolean output.
+
+Ext.data.association.Association:
+=================================
+A Model class in Ext JS 4 can be associated with other Model classes. This concept is pretty similar to the foreign key relationships in databases. Model classes can have the following association relationships with each other.
+
+*hasMany
+	*Represents an One-to-Many relationship
+*hasOne
+	*Represents an One-to-One relationship
+*belongsTo
+	*Represents a Many-to-One relationship
+Let’s understand associations with an example. We’ll define four Model classes: Country,ountryDetails,Continent, and City. The associations between these classes are defined below.
+*Country has many Cities
+*Many Countries belong to a Continent
+
+Each Country’s information is present in a CountryDetails object. We’ll define an in-memory proxy with JSON formatted data. The Continent, City, and CountryDetails classes are defined in
+
+	Ext.define("Continent", {
+	extend: "Ext.data.Model",
+	fields: ["name"]
+	});
+	Ext.define("City", {
+	extend: "Ext.data.Model",
+	fields: ["name"]
+	});
+	Ext.define("CountryDetails", {
+	extend: "Ext.data.Model",
+	fields: ["id","population"],
+	});
+The Country class that is related to these three classes along with the data is shown in
+
+	Ext.define("Country", {
+	extend: "Ext.data.Model",
+	idProperty : "name",
+	fields: ["name", "capital"],
+	hasMany: [{ name: "cities", model: "City"}],
+	hasOne: [{model:"CountryDetails"}],
+	belongsTo: [{ model: "Continent"}],
+	proxy : {
+	type : "memory",
+	data : {
+	country : {
+	name : "France",
+	capital : "Paris",
+	countrydetails : {
+	id : "cd101",
+	population : 65436552
+	},
+	cities : [
+	{name:"Lyon"},{name:"Avignon"}
+	],
+	continent : {
+	name : "Europe"
+	}
+	}
+	},
+	reader : {
+	type : "json",
+	root : "country"
+	}
+	}
+	});
+the code snippet where the Country class has the hasOne, belongsTo, and hasMany
+associations with CountryDetails, Continent, and City classes, respectively. The proxy class has the data configured in JSON format. You can load the country based on the name that’s configured to be the id of the Country and access the associated objects as shown below.
+
+	Country.load("France",{
+	success : function(record){
+	var continent = record.getContinent();
+	console.log(continent.get("name"));
+	var countryDetails = record.getCountryDetails();
+	console.log(countryDetails.get("population"));
+	var cities = record.cities();
+	cities.each(function(city){
+	console.log(city.get("name"));
+	});
+	}
+	});
+	
+The output of the code is:
+Europe
+65436552
+Lyon
+Avignon
+
+The interesting parts in the code above are the getContinent(), getCountryDetails() and cities() methods that are automatically generated for the associations.The hasOne and belongsTo associations have getter and setter methods generated.The hasMany association has a method generated with the configured name property. In this case, a method called cities() generated which is a collection of City instances. A Model instance just represents a single record. A Store is a collection of Model instances.
+
+Ext.data.Store:
+===============
+The **Ext.data.Store** class represents a data store that contains a collection of Model instances. Just like the way you wire-up a Model with a proxy, you can wire-up a store with a proxy. A Store can be populated with data that’s fetched from the data source using a Proxy. Another important aspect of a Store is the facility to sort, filter and search the underlying data.
+Let’s create a simple Store, populate it with data, and learn the basic operations that you can perform on it. We’ll not bring in a Proxy or a Reader in this example and populate the Store explicitly.Let’s define a Model class called ‘Book’ and create a book store as shown
+
+	Ext.define("Book", {
+	extend : "Ext.data.Model",
+	fields : ["title","author","price"]
+	});
+	var bookStore = Ext.create("Ext.data.Store", {
+	model : "Book"
+	});
+The bookstore is created by wiring the Book using the model property. You can create a Store without needing to explicitly define a Model as shown here.
+
+	var bookStore = Ext.create("Ext.data.Store", {
+	fields: ["title","author","price"]
+	});
+You can also define the BookStore as a new class that extends Store like this.
+	
+	Ext.define("BookStore",{
+	extend : "Ext.data.Store",
+	fields : ["title","author","price"]
+	});
+The bookstore defined empty without any data now. Let’s add some records to the bookStore using the add method in the Store class.
+
+	bookStore.add({ title: "Zend Framework", author: "Zend", price: 49.99 });
+	bookStore.add({ title: "Beginning F#", author: "Robert Pickering", price: 44.99 });
+	bookStore.add({ title: "Pro Hadoop", author: "Jason Venner", price: 39.99 });
+The each function prints the title and author of the book objects in bookStore. If you want to sort the bookStore by ascending order of title and before printing the contents, we can use the sort method as shown below.
+
+	bookStore.sort("title", "ASC");
+You can provide multiple sorting rules by passing an array of sorters. Each sorter is an object of **Ext.util.Sorter** class. You can sort the bookStore by descending order of price and ascending order of title as shown here.
+
+	bookStore.sort([
+	{ property: "price", direction: "DESC" },
+	{ property: "title", direction: "ASC" }
+	]);
+The Store class provides methods like filter and filterBy to filter the records based on some criteria. Say you want to filter the store by its price, here’s how to do that.
+
+	bookStore.filter("price", 49.99);
+You can provide custom criteria for filter functions by using the filterBy method as shown below.
+
+	bookStore.filterBy(function (record) {
+	return record.get("price") > 40.00;
+	});
+You pass a callback function as an argument to the filterBy method. This function is invoked for every record in the store and, based on your filtering logic, the function returns a boolean value. The record is filtered out if the function returns a false and stays back otherwise.
+After the filters are applied to the Store, the sorting operations will operate on those filtered records only. So youcan clear the filters anytime by calling the clearFilter method on the store as
+
+	bookStore.clearFilter();
+	
+Filtering a Store makes changes to the underlying collection of data. The UI controls that are wired to the Store will update themselves when a store is filtered.
+The Store class provides search functionalities in the form of find and query methods. You can query a store based on a property. The findRecord method returns the record against the condition. If you have to find the record in a store based on the title, you can do so by writing
+
+	var record = bookStore.findRecord("title", "Pro Hadoop");
+	console.log(record.get("author")); // Prints Jason Venner
+If you need to find all the records against a custom validation condition, you can use the queryBy method. The queryBy method is very similar to the filterBy method that we discussed earlier, the only difference being the return value. The queryBy method returns a collection of records, while filterBy doesn’t return anything. Say you want to get all the books with a price greater than $40, here’s how you do that.
+
+	var books = bookStore.queryBy(function (record) {
+	return record.get("price") > 40;
+	});
+	books.each(function (book) {
+	console.log(book.get("title"));
+	});
+You created a Store and added Model instances by using the add method and played with sorting, filtering and searching options. You can also create a store by specifying the data inline as shown
+
+	var bookStore = Ext.create("Ext.data.Store", {
+	model: "Book",
+	data: [
+	{ title: "Zend Framework", author: "Zend", price: 49.99 },
+	{ title: "Beginning F#", author: "Robert Pickering", price: 44.99 },
+	{ title: "Pro Hadoop", author: "Jason Venner", price: 39.99 }
+	]
+	});
