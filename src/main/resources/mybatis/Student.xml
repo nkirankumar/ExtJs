@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Student1">
+	<insert id="insert" parameterType="Student" useGeneratedKeys="true"
+		keyProperty="id">
+		INSERT INTO STUDENT (ID,NAME, BRANCH, PERCENTAGE, PHONE,
+		EMAIL ) VALUES
+		(#{id},#{name,jdbcType=VARCHAR}, #{branch},
+		#{percentage}, #{phone}, #{email});
+	</insert>
+</mapper>

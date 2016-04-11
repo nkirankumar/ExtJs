@@ -8,12 +8,15 @@
 	<name>Extjs web API</name>
 	<url>http://maven.apache.org</url>
 	<properties>
-		<jdk.version>1.7</jdk.version>
-		<java-version>1.7</java-version>
+		<jdk.version>1.8</jdk.version>
+		<java-version>1.8</java-version>
 		<junit-version>4.11</junit-version>
 		<org.springframework-version>3.2.13.RELEASE</org.springframework-version>
 		<org.slf4j-version>1.7.7</org.slf4j-version>
 		<jackson.version>2.5.0</jackson.version>
+		<org.postgresql-version>9.4.1207.jre7</org.postgresql-version>
+		<org.mybatis-version>3.0.6</org.mybatis-version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -109,6 +112,29 @@
 			</exclusions>
 			<scope>compile</scope>
 		</dependency>
+		<!-- postgresql driver -->
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>${org.postgresql-version}</version>
+		</dependency>
+		<!-- my batis -->
+		<dependency>
+			<groupId>org.mybatis</groupId>
+			<artifactId>mybatis</artifactId>
+			<version>${org.mybatis-version}</version>
+		</dependency>
+		<!-- <dependency>
+			<groupId>org.mybatis</groupId>
+			<artifactId>mybatis-spring</artifactId>
+			<version>1.0.0</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-jdbc</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency> -->
 		<!-- test -->
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -116,12 +142,8 @@
 			<version>${org.springframework-version}</version>
 			<scope>test</scope>
 		</dependency>
-		<!-- <dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-test-mvc</artifactId>
-			<version>1.0.0.M2</version>
-			<scope>test</scope>
-		</dependency> -->
+		<!-- <dependency> <groupId>org.springframework</groupId> <artifactId>spring-test-mvc</artifactId> 
+			<version>1.0.0.M2</version> <scope>test</scope> </dependency> -->
 	</dependencies>
 	<build>
 		<finalName>Extjs</finalName>
@@ -141,7 +163,7 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>2.3.2</version>
 				<configuration>
-					<encoding>UTF-8</encoding>
+					<encoding>${project.build.sourceEncoding}</encoding>
 					<source>${jdk.version}</source>
 					<target>${jdk.version}</target>
 				</configuration>
